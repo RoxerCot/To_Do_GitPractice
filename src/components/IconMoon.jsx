@@ -1,6 +1,9 @@
-const MoonIcon = ({ fill = "#fff", ...props }) => {
+const IconMoon = ({ fill = "#fff", ...props }) => {
   return (
     <svg
+      /**
+       * Como esto es javascript, las propiedades de svg no deben de llevar guion
+       */
       {...props}
       fill={fill}
       xmlns="http://www.w3.org/2000/svg"
@@ -15,4 +18,4 @@ const MoonIcon = ({ fill = "#fff", ...props }) => {
     </svg>
   );
 };
-export default MoonIcon;
+export default IconMoon;
