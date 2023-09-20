@@ -1,3 +1,4 @@
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useEffect, useState } from "react";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
@@ -12,6 +13,13 @@ import ToDoList from "./components/ToDoList";
 //   { id: 3, title: "Pick up groceries", completed: true },
 //   { id: 4, title: "Do Laundry", completed: true },
 // ];
+const reorder = (list, startIndex, endIndex) => {
+  const result = [...list];
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
 const initialStateToDo = JSON.parse(localStorage.getItem("toDos")) || [];
 const App = () => {
   const [toDos, SetToDos] = useState(initialStateToDo);
@@ -54,6 +62,19 @@ const App = () => {
         return toDos;
     }
   };
+  const handleDragEnd = (result) => {
+    const { destination, source } = result;
+    if (!destination) return;
+    if (
+      source.index === destination.index &&
+      source.droppableId === destination.droppableId
+    )
+      return;
+
+    SetToDos((prevTasks) =>
+      reorder(prevTasks, source.index, destination.index)
+    );
+  };
   return (
     <div
       className="min-h-screen bg-gray-300  
@@ -65,11 +86,13 @@ const App = () => {
       <Header />
       <main className="container mx-auto mt-8 px-4 md:max-w-xl">
         <ToDoAdd addToDo={addToDo} />
-        <ToDoList
-          toDos={filteredToDos()}
-          removeToDo={removeToDo}
-          updateToDo={updateToDo}
-        />
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <ToDoList
+            toDos={filteredToDos()}
+            removeToDo={removeToDo}
+            updateToDo={updateToDo}
+          />
+        </DragDropContext>
         <ToDoComputed countItems={countItems} clearCompleted={clearCompleted} />
         <ToDoFilter changeFilter={changeFilter} filter={filter} />
       </main>
